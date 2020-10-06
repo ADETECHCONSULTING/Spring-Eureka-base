@@ -1,6 +1,8 @@
 package com.adamatraore.microservicegalleryeurekaclient.controllers;
 
 import com.adamatraore.microservicegalleryeurekaclient.entities.Gallery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,8 @@ public class HomeController {
     @Autowired
     private Environment environment;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+
     @RequestMapping("/")
     public String home() {
         return "Hello from Gallery Service running on port : " + environment.getProperty("local.server.port");
@@ -26,12 +30,14 @@ public class HomeController {
 
     @RequestMapping("/{id}")
     public Gallery getGallery(@PathVariable Integer id) {
+        LOGGER.info("creating gallery object...");
         Gallery gallery = new Gallery();
         gallery.setId(id);
 
         List<Object> images = restTemplate.getForObject("http://image-service/images", List.class);
         gallery.setImages(images);
 
+        LOGGER.info("returning gallery with images...");
         return gallery;
     }
 
